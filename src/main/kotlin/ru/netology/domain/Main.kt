@@ -56,7 +56,6 @@ fun main() {
     println(NotesService.commentsList)
 
 
-    //////////////////////////////////////////////////
     noteCase.edit(0, note2)
     println(NotesService.notesList)
 

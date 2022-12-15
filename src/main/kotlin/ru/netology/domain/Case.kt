@@ -25,7 +25,7 @@ class CaseNote(item: Note, listItem: MutableList<Note>) : CaseGeneric<Note>(item
         if (!listItem[id].isDeleted) {
             listItem[id] = item
         } else {
-            println("Нельзя редактировать удаленный объект")
+            throw ObjectNotFoundException("Нельзя редактировать удаленный объект")
         }
     }
 }
@@ -41,7 +41,7 @@ class CaseNoteComment(item: NoteComment, listItem: MutableList<NoteComment>) :
         if (!listItem[id].isDeleted) {
             listItem[id] = item
         } else {
-            println("Нельзя редактировать удаленный объект")
+            throw ObjectNotFoundException("Нельзя редактировать удаленный объект")
         }
     }
 }

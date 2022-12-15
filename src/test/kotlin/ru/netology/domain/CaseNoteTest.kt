@@ -3,6 +3,7 @@ package ru.netology.domain
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
+import kotlin.test.assertFailsWith
 
 class CaseNoteTest {
 
@@ -29,6 +30,29 @@ class CaseNoteTest {
         noteCase.add(note)
         noteCase.delete(0)
         val result = NotesService.notesList[0].isDeleted
+
+        // assert
+        assertEquals(true, result)
+    }
+
+    @Test
+    fun deleteNoteTestForCommentInNote() {
+
+        val comment1 = NoteComment(0, "0", "111", null, "Test message")
+        val note = Note(
+            id = 0,
+            title = "Test1",
+            text = "Test1 text",
+            date = 1663613504,
+            privacy = "0",
+            comments = comment1
+        )
+        val noteCase = CaseNote(note, NotesService.notesList)
+
+        // act
+        noteCase.add(note)
+        noteCase.delete(0)
+        val result = NotesService.notesList[0].comments?.isDeleted
 
         // assert
         assertEquals(true, result)
@@ -103,7 +127,8 @@ class CaseNoteTest {
             text = "Test1 text",
             date = 1663613504,
             privacy = "0",
-            comments = comment1
+            comments = comment1,
+            isDeleted = true
         )
         val note2 = Note(
             id = 1,
@@ -117,11 +142,12 @@ class CaseNoteTest {
 
         // act
         noteCase.add(note)
-        noteCase.edit(0, note2)
-        val result = NotesService.notesList[0].title
+        val exception = assertFailsWith<RuntimeException> {
+            noteCase.edit(0, note2)
+        }
 
         // assert
-        assertEquals("Test2", result)
+        assertEquals("Нельзя редактировать удаленный объект", exception.message)
     }
 
     @Test
@@ -148,5 +174,30 @@ class CaseNoteTest {
 
         // assert
         assertEquals("Test message 2", result)
+    }
+    @Test
+    fun editCommentFail() {
+        val comment1 = NoteComment(0, "0", "111", null, "Test message", isDeleted = true)
+        val comment2 = NoteComment(1, "0", "222", null, "Test message 2")
+        val note = Note(
+            id = 0,
+            title = "Test1",
+            text = "Test1 text",
+            date = 1663613504,
+            privacy = "0",
+            comments = comment1
+        )
+        val noteCase = CaseNote(note, NotesService.notesList)
+        val commentCase = CaseNoteComment(comment1, NotesService.commentsList)
+
+        // act
+        noteCase.add(note)
+        commentCase.add(comment1)
+        val exception = assertFailsWith<RuntimeException> {
+            commentCase.edit(0, comment2)
+        }
+
+        // assert
+        assertEquals("Нельзя редактировать удаленный объект", exception.message)
     }
 }
